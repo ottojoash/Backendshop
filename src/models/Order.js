@@ -25,6 +25,10 @@ const OrderSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  phoneNumber: {
+    type: Number,
+    required: true,
+  },
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',

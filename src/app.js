@@ -6,6 +6,7 @@ const authRoutes = require('./routes/auth')
 const shopRoutes = require('./routes/shop')
 const orderRoutes = require('./routes/order')
 const userRoutes = require('./routes/user')
+const categoryRoutes = require('./routes/category');
 
 // app.use(cors());
 // app.use(express.json());
@@ -25,6 +26,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/shop', shopRoutes);
 app.use('/api', orderRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/shop', categoryRoutes); 
 
 
 
