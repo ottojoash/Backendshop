@@ -20,14 +20,15 @@ connectDB();
 app.use(cors());
 app.use(express.json());
 
-// Static Files
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/shop', shopRoutes);
-app.use('/api/orders', orderRoutes); // Changed to /api/orders to be consistent
+app.use('/api/orders', orderRoutes); // Ensured endpoint consistency
 app.use('/api/users', userRoutes);
-app.use('/api/categories', categoryRoutes); // Changed to /api/categories to be consistent
+app.use('/api/categories', categoryRoutes); // Ensured endpoint consistency
+
+// Serve frontend files if needed (optional)
+// If you're serving static frontend files from a 'public' directory, uncomment this line:
+// app.use(express.static(path.join(__dirname, 'public')));
 
 module.exports = app;
