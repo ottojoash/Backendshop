@@ -4,9 +4,9 @@ const mongoose = require('mongoose');
 const CategorySchema = new mongoose.Schema({
   image: {
     type: String,
-    required: true,
+    required: false,  // Make it optional since it might not be always present
   },
-  category: {
+  name: {
     type: String,
     required: true,
   },

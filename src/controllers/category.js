@@ -1,5 +1,6 @@
 // controllers/category.controller.js
-const Category = require('../models/Category')
+const Category = require('../models/Category');
+const uploadToFirebase = require('../middleware/upload').uploadToFirebase; // Import the function to upload image to Firebase
 
 // Get all categories
 exports.getCategories = async (req, res) => {
@@ -13,21 +14,24 @@ exports.getCategories = async (req, res) => {
 
 // Create a new category
 exports.createCategory = async (req, res) => {
-    try {
-      const { image, name } = req.body;
-      
-      if (!image || !name) {
-        return res.status(400).json({ message: 'Image and category name are required' });
-      }
-  
-      const newCategory = new Category({ image, name });
-      await newCategory.save();
-      
-      res.status(201).json(newCategory);
-    } catch (error) {
-      res.status(500).json({ message: error.message });
+  try {
+    const name = req.body.name; // This should be `name` as per the updated schema
+    const image = req.file ? req.file.firebaseUrl : ''; // Ensure `req.file.firebaseUrl` is correct
+
+    if (!name) {
+      return res.status(400).json({ message: 'Category name is required' });
     }
-  };
+
+    const newCategory = new Category({ image, name });
+    await newCategory.save();
+    
+    res.status(201).json(newCategory);
+  } catch (error) {
+    console.error('Error creating category:', error); // Log the error for debugging
+    res.status(500).json({ message: error.message });
+  }
+};
+
 
 // Get a category by ID
 exports.getCategoryById = async (req, res) => {
