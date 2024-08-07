@@ -1,12 +1,15 @@
 const nodemailer = require('nodemailer');
 
+
 const transporter = nodemailer.createTransport({
-  service: 'outlook',
-  auth: {
-    user: 'ottojoash48@outlook.com',
-    pass: 'Joash@outlook'
-  }
-});
+    host: process.env.SMTP_HOST,
+    port: parseInt(process.env.SMTP_PORT, 10),
+    secure: false, // Use true for 465, false for other ports
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    },
+  });
 
 const sendOrderEmail = (orderData, callback) => {
   const { order, username, phoneNumber, email } = orderData;
