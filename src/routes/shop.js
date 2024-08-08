@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { upload, uploadToFirebase } = require('../middleware/upload');
-const { createProduct, getProducts, getProductById } = require('../controllers/product');
+const { createProduct, getProducts, getProductById, updateProduct, deleteProduct } = require('../controllers/product');
 
 // Route to upload image
 router.post('/upload-image', upload.single('image'), uploadToFirebase, (req, res) => {
@@ -20,5 +20,11 @@ router.get('/products', getProducts);
 
 // Route to get a product by ID
 router.get('/products/:productId', getProductById);
+
+// Route to update a product with file upload
+router.put('/products/:productId', upload.single('image'), uploadToFirebase, updateProduct);
+
+// Route to delete a product
+router.delete('/products/:productId', deleteProduct);
 
 module.exports = router;
