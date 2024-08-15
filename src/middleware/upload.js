@@ -25,34 +25,52 @@ admin.initializeApp({
 
 const bucket = admin.storage().bucket();
 
-// Multer configuration
+// Multer configuration for handling multiple files
 const storage = multer.memoryStorage(); // Use memoryStorage for file buffer
-const upload = multer({ storage });
+const upload = multer({ 
+  storage,
+  limits: { fileSize: 10 * 1024 * 1024 }, // Limit file size to 10MB
+  fileFilter: (req, file, cb) => {
+    if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) { // Accept only certain file types
+      return cb(new Error('Only image files are allowed!'), false);
+    }
+    cb(null, true);
+  }
+}).array('images', 10); // Handle up to 10 files with the field name 'images'
 
-// Middleware function to upload file to Firebase Storage
+// Middleware function to upload files to Firebase Storage
 const uploadToFirebase = async (req, res, next) => {
-  if (!req.file) {
-    return next(); // Proceed if no file is provided
+  if (!req.files || req.files.length === 0) {
+    return next(); // Proceed if no files are provided
   }
 
   try {
-    const { buffer, originalname } = req.file;
-    const file = bucket.file(originalname);
+    // Process each file in the `req.files` array
+    const uploadPromises = req.files.map(async (file) => {
+      const { buffer, originalname } = file;
+      const fileRef = bucket.file(originalname);
 
-    // Upload file to Firebase Storage
-    await file.save(buffer, {
-      metadata: { contentType: req.file.mimetype },
+      // Upload file to Firebase Storage
+      await fileRef.save(buffer, {
+        metadata: { contentType: file.mimetype },
+      });
+
+      // Make file publicly accessible
+      await fileRef.makePublic();
+
+      // Get file's public URL
+      return `https://storage.googleapis.com/${process.env.FIREBASE_STORAGE_BUCKET}/${originalname}`;
     });
 
-    // Make file publicly accessible
-    await file.makePublic();
-
-    // Get file's public URL
-    req.file.firebaseUrl = `https://storage.googleapis.com/${process.env.FIREBASE_STORAGE_BUCKET}/${originalname}`;
+    // Wait for all files to be uploaded
+    const fileUrls = await Promise.all(uploadPromises);
+    
+    // Add file URLs to the request object
+    req.filesFirebaseUrls = fileUrls;
     next();
   } catch (error) {
     console.error('Error uploading to Firebase Storage:', error);
-    res.status(500).send('Error uploading file');
+    res.status(500).send('Error uploading files');
   }
 };
 

@@ -11,16 +11,16 @@ const {
 } = require('../controllers/category');
 
 // Route to upload image
-router.post('/upload-image', upload.single('image'), uploadToFirebase, (req, res) => {
-  if (req.file && req.file.firebaseUrl) {
-    res.json({ imageUrl: req.file.firebaseUrl });
+router.post('/upload-images', upload, uploadToFirebase, (req, res) => {
+  if (req.file && req.file.firebaseUrls) {
+    res.json({ imageUrls: req.file.firebaseUrls });
   } else {
     res.status(400).send('No file uploaded');
   }
 });
 
 // Route to create a category with file upload
-router.post('/categories', upload.single('image'), uploadToFirebase, createCategory);
+router.post('/categories', upload, uploadToFirebase, createCategory);
 
 // Route to get all categories
 router.get('/categories', getCategories);
@@ -29,7 +29,7 @@ router.get('/categories', getCategories);
 router.get('/categories/:categoryId', getCategoryById);
 
 // Route to update a category by ID
-router.put('/categories/:categoryId', upload.single('image'), uploadToFirebase, updateCategory);
+router.put('/categories/:categoryId',  upload, uploadToFirebase, updateCategory);
 
 // Route to delete a category by ID
 router.delete('/categories/:categoryId', deleteCategory);

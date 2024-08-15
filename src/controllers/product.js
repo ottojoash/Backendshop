@@ -4,11 +4,11 @@ const Product = require('../models/Product');
 const createProduct = async (req, res) => {
   try {
     const { title, category, description, rating, price, originalPrice } = req.body;
-    const image = req.file ? req.file.firebaseUrl : ''; // Ensure req.file.firebaseUrl is available
+    const images = req.file ? req.file.firebaseUrl : ''; // Ensure req.file.firebaseUrl is available
 
     const newProduct = new Product({
       title,
-      image,
+      images,
       category,
       description,
       rating,
@@ -56,11 +56,11 @@ const getProductById = async (req, res) => {
 const updateProduct = async (req, res) => {
   try {
     const { title, category, description, rating, price, originalPrice } = req.body;
-    const image = req.file ? req.file.firebaseUrl : undefined; // Don't override if no new image
+    const images = req.file ? req.file.firebaseUrl : undefined; // Don't override if no new image
 
     const productFields = { title, category, description, rating, price, originalPrice };
-    if (image) {
-      productFields.image = image;
+    if (images) {
+      productFields.images = images;
     }
 
     let product = await Product.findById(req.params.productId);
